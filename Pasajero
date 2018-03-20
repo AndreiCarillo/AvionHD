@@ -1,0 +1,26 @@
+package Mundo;
+public class Pasajero
+{
+  private int cedula;
+  private String nombre;
+  public Pasajero(int unaCedula, String unNombre)
+  {
+    cedula = unaCedula;
+    nombre = unNombre;
+  }
+  public int darCedula()
+  {
+    return cedula;
+  }
+  public String darNombre()
+  {
+    return nombre;
+  }
+  public boolean igualA(Pasajero otroPasajero)
+  {
+    if (cedula == otroPasajero.darCedula()) {
+      return true;
+    }
+    return false;
+  }
+}
