@@ -1,0 +1,157 @@
+package Interfaz;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import Mundo.Avion;
+import Mundo.Pasajero;
+import Mundo.Silla;
+public class InterfazAvion extends JFrame
+{
+private Avion avion;
+private PanelAvion panelAvion;
+private PanelBotonesAvion panelBotones;
+private DialogoAsignacion dAsignacion;
+
+public InterfazAvion()
+{
+  avion = new Avion();
+  
+
+  setLayout(new BorderLayout());
+  
+
+  panelBotones = new PanelBotonesAvion(this);
+  add(panelBotones, "North");
+  
+
+  panelAvion = new PanelAvion(avion);
+  add(panelAvion, "Center");
+  
+  String titulo = "El Avión";
+  setTitle(titulo);
+  pack();
+  setResizable(false);
+  setDefaultCloseOperation(3);
+}
+public void registrarPasajero()
+{
+  dAsignacion = new DialogoAsignacion(this, avion);
+  dAsignacion.setLocation(calculaPosicionCentral(this, dAsignacion));
+  dAsignacion.setModal(true);
+  dAsignacion.setVisible(true);
+  actualizar();
+}
+public void anularPasajero()
+{
+ int cedula;
+  String sCedula = JOptionPane.showInputDialog(this, "Ingrese el número de cédula");
+  try
+  {
+    cedula = Integer.parseInt(sCedula);
+  }
+  catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(this, "Error en el número de cédula.", "Anulación", 0); return;
+  }
+  
+  Pasajero pasajero = new Pasajero(cedula, "no importa");
+  if (!avion.desasignarSilla(pasajero))
+  {
+    JOptionPane.showMessageDialog(this, "El pasajero no tenía silla asignada", "Anulación", 0);
+    return;
+  }
+  
+  actualizar();
+}
+public void mostrarPorcentajeOcupacion()
+{
+  double porcentaje = avion.calcularPorcentajeOcupacion();
+  DecimalFormat df = (DecimalFormat)NumberFormat.getInstance();
+  df.applyPattern("###.##");
+  JOptionPane.showMessageDialog(this, "El porcentaje de ocupación es " + df.format(porcentaje) + "%", "Ocupación del avión", 1);
+}
+public void buscarPasajero()
+{
+  int cedula;
+  String sCedula = JOptionPane.showInputDialog(this, "Ingrese el número de cédula");
+  try
+  {
+    cedula = Integer.parseInt(sCedula);
+  }
+  catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(this, "Error en el número de cédula.", "Anulación", 0); return;
+  }
+  Pasajero pasajero = new Pasajero(cedula, "no importa");
+  
+  Silla silla = avion.buscarPasajero(pasajero);
+  
+  if (silla != null)
+  {
+    VentanaDatosPasajero vDatos = new VentanaDatosPasajero(silla);
+    vDatos.setLocation(calculaPosicionCentral(this, vDatos));
+    vDatos.setVisible(true);
+
+  }
+  else
+  {
+    JOptionPane.showMessageDialog(this, "El pasajero no se encuentra registrado", "Búsqueda registro", 1);
+    return;
+  }
+ }
+public void reqFuncOpcion1()
+{
+  String respuesta = avion.metodo1();
+  JOptionPane.showMessageDialog(this, respuesta, "Respuesta", 1);
+}
+public void reqFuncOpcion2()
+{
+  String respuesta = avion.metodo2();
+  JOptionPane.showMessageDialog(this, respuesta, "Respuesta", 1);
+}
+public void actualizar()
+{
+  remove(panelAvion);
+  
+
+  panelAvion = new PanelAvion(avion);
+  add(panelAvion, "Center");
+  validate();
+}
+private Point calculaPosicionCentral(Component componentePadre, Component componenteHijo)
+{
+  Dimension tamañoPantalla = Toolkit.getDefaultToolkit().getScreenSize();
+  int maxY = getHeight();
+  int minY = 0;
+  
+
+  Dimension tamanhoPadre = componentePadre.getSize();
+  Point locacionPadre = componentePadre.getLocation();
+  Dimension tamanhoHijo = componenteHijo.getSize();
+  int x = (WIDTH - WIDTH) / 2;
+  int y = (HEIGHT - HEIGHT) /2;
+  
+
+  if (y + HEIGHT > maxY)
+  {
+    y = maxY - HEIGHT;
+  }
+  
+
+  if (y < minY)
+  {
+    y = 0;
+  }
+  return new Point(x, y);
+}
+public static void main(String[] args)
+{
+  InterfazAvion interfaz = new InterfazAvion();
+  interfaz.setVisible(true);
+}
+}
