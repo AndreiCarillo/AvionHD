@@ -1,0 +1,84 @@
+package Interfaz;
+import java.awt.BorderLayout;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import Mundo.Avion;
+import Mundo.Pasajero;
+import Mundo.Silla;
+public class DialogoAsignacion extends JDialog
+{
+  private Avion avion;
+  private InterfazAvion ventana;
+  private PanelBotonesAsignacion panelBotones;
+  private PanelDatosAsignacion panelDatos;
+
+ public DialogoAsignacion(InterfazAvion Ventana, Avion elAvion)
+ {
+   avion = elAvion;
+   ventana = Ventana;
+   setLayout(new BorderLayout());
+   panelDatos = new PanelDatosAsignacion();
+   add(panelDatos, "Center");
+   panelBotones = new PanelBotonesAsignacion(this);
+   add(panelBotones, "South");
+   setTitle("Registro de pasajero");
+   pack();
+   setDefaultCloseOperation(2);
+  }
+public void registrar()
+{
+  String nombre = panelDatos.darNombre();
+  String sCedula = panelDatos.darCedula();
+  
+  if ((sCedula == null) || (sCedula.equals("")))
+  {
+    JOptionPane.showMessageDialog(this, "La cédula es requerida", "Registro", 0);
+    return;
+  }
+  int cedula;
+  try
+  {
+    cedula = Integer.parseInt(sCedula);
+  }
+  catch (Exception e) {
+    JOptionPane.showMessageDialog(this, "La cédula es numérica", "Registro", 0); return;
+  }
+  
+  if ((nombre == null) || (nombre.equals("")))
+  {
+    JOptionPane.showMessageDialog(this, "El nombre es requerido", "Registro", 0);
+    return;
+  }
+  
+
+  Pasajero pasajero = new Pasajero(cedula, nombre);
+  
+
+  Silla silla = avion.buscarPasajero(pasajero);
+  
+  if (silla != null)
+  {
+    JOptionPane.showMessageDialog(this, "El pasajero ya tiene una silla asignada", "Registro", 0);
+    return;
+  }
+  
+
+  int clase = panelDatos.darClase();
+  char ubicacion = panelDatos.darUbicacion();
+  silla = avion.asignarSilla(clase, ubicacion, pasajero);
+  
+  if (silla == null)
+  {
+    JOptionPane.showMessageDialog(this, "No hay sillas disponibles con dichas características", "Registro", 0);
+    return;
+  }
+  ventana.actualizar();
+  dispose();
+ }
+ public void cancelar()
+ {
+  ventana.actualizar();
+  dispose();
+ }
+}
+
